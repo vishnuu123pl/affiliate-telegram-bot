@@ -1,12 +1,13 @@
 import os
 import requests
-from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+from urllib.parse import *
+
 from telegram import Update
 from telegram.ext import *
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 AMAZON_TAG = os.getenv("AMAZON_TAG")
-FLIPKART_TAG = os.getenv("FLIPKART_TAG")
+
 
 def expand_url(url):
     try:
@@ -18,6 +19,7 @@ def expand_url(url):
         return r.url
     except:
         return url
+
 
 def make_affiliate(url, tag):
 
@@ -41,19 +43,27 @@ def make_affiliate(url, tag):
 
     query["tag"] = [tag]
 
-    clean_query = urlencode(
-        query,
-        doseq=True
-    )
-
     return urlunparse(
         parsed._replace(
-            query=clean_query
+            query=urlencode(
+                query,
+                doseq=True
+            )
         )
     )
 
-async def convert(update: Update,
-                  context: ContextTypes.DEFAULT_TYPE):
+
+async def convert(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    # FIXED CRASH
+    if not update.message:
+        return
+
+    if not update.message.text:
+        return
 
     text = update.message.text.strip()
 
@@ -69,7 +79,6 @@ async def convert(update: Update,
 
             expanded = expand_url(item)
 
-            # AMAZON
             if (
                 "amazon." in expanded
                 or "amzn." in expanded
@@ -81,18 +90,6 @@ async def convert(update: Update,
                 )
 
                 modified.append(aff)
-
-                changed = True
-
-            # FLIPKART
-            elif (
-                "flipkart." in expanded
-                or "fkrt.co" in expanded
-            ):
-
-                modified.append(
-                    f"🛒 Flipkart: {expanded}"
-                )
 
                 changed = True
 
@@ -111,6 +108,25 @@ async def convert(update: Update,
 
     else:
 
+        await update.message.reply_text(
+            "❌ No supported link found."
+        )
+
+
+app = ApplicationBuilder().token(
+    BOT_TOKEN
+).build()
+
+app.add_handler(
+    MessageHandler(
+        filters.ALL,
+        convert
+    )
+)
+
+print("Bot Running...")
+
+app.run_polling()
         await update.message.reply_text(
             "❌ No supported link found."
         )
