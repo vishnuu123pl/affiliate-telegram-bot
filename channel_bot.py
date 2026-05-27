@@ -2,8 +2,8 @@ from telethon import TelegramClient, events
 import requests
 from urllib.parse import *
 
-API_ID = 12345678
-API_HASH = "YOUR_API_HASH"
+API_ID = 13305226
+API_HASH = "8cde2475d6b0cb1162b89ebbac71a95d"
 
 AMAZON_TAG = "fastdeals0ee-21"
 
