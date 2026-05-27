@@ -6,10 +6,15 @@ from telegram.ext import *
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 AMAZON_TAG = os.getenv("AMAZON_TAG")
+FLIPKART_TAG = os.getenv("FLIPKART_TAG")
 
 def expand_url(url):
     try:
-        r = requests.get(url, allow_redirects=True, timeout=10)
+        r = requests.get(
+            url,
+            allow_redirects=True,
+            timeout=10
+        )
         return r.url
     except:
         return url
@@ -23,7 +28,6 @@ def make_affiliate(url, tag):
 
     query = parse_qs(parsed.query)
 
-    # Remove old / unwanted tracking params
     remove_keys = [
         "tag",
         "linkCode",
@@ -35,7 +39,6 @@ def make_affiliate(url, tag):
     for k in remove_keys:
         query.pop(k, None)
 
-    # Add YOUR affiliate tag
     query["tag"] = [tag]
 
     clean_query = urlencode(
@@ -49,7 +52,8 @@ def make_affiliate(url, tag):
         )
     )
 
-async def convert(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def convert(update: Update,
+                  context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text.strip()
 
@@ -65,7 +69,11 @@ async def convert(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             expanded = expand_url(item)
 
-            if "amazon." in expanded or "amzn." in expanded:
+            # AMAZON
+            if (
+                "amazon." in expanded
+                or "amzn." in expanded
+            ):
 
                 aff = make_affiliate(
                     expanded,
@@ -73,6 +81,18 @@ async def convert(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
 
                 modified.append(aff)
+
+                changed = True
+
+            # FLIPKART
+            elif (
+                "flipkart." in expanded
+                or "fkrt.co" in expanded
+            ):
+
+                modified.append(
+                    f"🛒 Flipkart: {expanded}"
+                )
 
                 changed = True
 
@@ -95,10 +115,15 @@ async def convert(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "❌ No supported link found."
         )
 
-app = ApplicationBuilder().token(BOT_TOKEN).build()
+app = ApplicationBuilder().token(
+    BOT_TOKEN
+).build()
 
 app.add_handler(
-    MessageHandler(filters.TEXT, convert)
+    MessageHandler(
+        filters.TEXT,
+        convert
+    )
 )
 
 app.run_polling()
