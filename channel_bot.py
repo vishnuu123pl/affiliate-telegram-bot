@@ -3,7 +3,7 @@ import requests
 from urllib.parse import *
 
 API_ID = 13305226
-API_HASH = "YOUR_API_HASH"
+API_HASH = "8cde2475d6b0cb1162b89ebbac71a95d"
 
 AMAZON_TAG = "fastdeals0ee-21"
 
@@ -13,7 +13,6 @@ SOURCE_CHANNELS = [
 
 TARGET_CHANNEL = "@Fast_deals_online"
 
-
 def expand_url(url):
     try:
         r = requests.get(
@@ -22,27 +21,14 @@ def expand_url(url):
             timeout=10
         )
         return r.url
-
     except:
         return url
-
 
 def make_affiliate(url):
 
     parsed = urlparse(url)
 
     query = parse_qs(parsed.query)
-
-    remove_keys = [
-        "tag",
-        "linkCode",
-        "linkId",
-        "ref_",
-        "ascsubtag"
-    ]
-
-    for k in remove_keys:
-        query.pop(k, None)
 
     query["tag"] = [AMAZON_TAG]
 
@@ -55,26 +41,18 @@ def make_affiliate(url):
         )
     )
 
-
 client = TelegramClient(
     "affiliate_session",
     API_ID,
     API_HASH
 )
 
-
 @client.on(
     events.NewMessage(
-        chats=SOURCE_CHANNELS,
-        incoming=True
+        chats=SOURCE_CHANNELS
     )
 )
 async def handler(event):
-
-    print("\nNEW EVENT")
-    print("CHAT ID:", event.chat_id)
-    print("TEXT:", event.raw_text)
-    print("-------------")
 
     text = event.raw_text
 
@@ -112,7 +90,6 @@ async def handler(event):
             final_msg,
             link_preview=False
         )
-
 
 client.start()
 
