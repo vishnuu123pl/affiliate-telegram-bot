@@ -1,9 +1,9 @@
 import os
 import requests
-from urllib.parse import *
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 from telegram import Update
-from telegram.ext import *
+from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 AMAZON_TAG = os.getenv("AMAZON_TAG")
@@ -27,7 +27,6 @@ def make_affiliate(url, tag):
         return url
 
     parsed = urlparse(url)
-
     query = parse_qs(parsed.query)
 
     remove_keys = [
@@ -45,10 +44,7 @@ def make_affiliate(url, tag):
 
     return urlunparse(
         parsed._replace(
-            query=urlencode(
-                query,
-                doseq=True
-            )
+            query=urlencode(query, doseq=True)
         )
     )
 
@@ -58,11 +54,10 @@ async def convert(
     context: ContextTypes.DEFAULT_TYPE
 ):
 
-    # FIXED CRASH
-    if not update.message:
+    if update.message is None:
         return
 
-    if not update.message.text:
+    if update.message.text is None:
         return
 
     text = update.message.text.strip()
@@ -70,7 +65,6 @@ async def convert(
     words = text.split()
 
     modified = []
-
     changed = False
 
     for item in words:
@@ -90,7 +84,6 @@ async def convert(
                 )
 
                 modified.append(aff)
-
                 changed = True
 
             else:
@@ -102,7 +95,7 @@ async def convert(
     if changed:
 
         await update.message.reply_text(
-            "✅ Converted\n\n" +
+            "✅ Woww Offer \n\n" +
             " ".join(modified)
         )
 
@@ -125,21 +118,5 @@ app.add_handler(
 )
 
 print("Bot Running...")
-
-app.run_polling()
-        await update.message.reply_text(
-            "❌ No supported link found."
-        )
-
-app = ApplicationBuilder().token(
-    BOT_TOKEN
-).build()
-
-app.add_handler(
-    MessageHandler(
-        filters.TEXT,
-        convert
-    )
-)
 
 app.run_polling()
