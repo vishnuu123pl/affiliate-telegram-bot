@@ -53,11 +53,13 @@ async def convert(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = update.message.text.strip()
 
-    urls = text.split()
+    words = text.split()
 
-    output = []
+    modified = []
 
-    for item in urls:
+    changed = False
+
+    for item in words:
 
         if "http" in item:
 
@@ -65,15 +67,26 @@ async def convert(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
             if "amazon." in expanded or "amzn." in expanded:
 
-                aff = make_affiliate(expanded, AMAZON_TAG)
+                aff = make_affiliate(
+                    expanded,
+                    AMAZON_TAG
+                )
 
-                output.append(aff)
+                modified.append(aff)
 
-    if output:
+                changed = True
+
+            else:
+                modified.append(item)
+
+        else:
+            modified.append(item)
+
+    if changed:
 
         await update.message.reply_text(
-            "✅ Amazon Affiliate Link Created\n\n" +
-            "\n".join(output)
+            "✅ Converted\n\n" +
+            " ".join(modified)
         )
 
     else:
