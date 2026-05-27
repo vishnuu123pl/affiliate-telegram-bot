@@ -22,6 +22,7 @@ def expand_url(url):
             timeout=10
         )
         return r.url
+
     except:
         return url
 
@@ -53,6 +54,20 @@ def make_affiliate(url):
             )
         )
     )
+
+
+client = TelegramClient(
+    "affiliate_session",
+    API_ID,
+    API_HASH
+)
+
+
+@client.on(
+    events.NewMessage(
+        chats=SOURCE_CHANNELS
+    )
+)
 async def handler(event):
 
     text = event.raw_text
