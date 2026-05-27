@@ -16,14 +16,36 @@ def expand_url(url):
 
 def make_affiliate(url, tag):
 
+    if not tag:
+        return url
+
     parsed = urlparse(url)
+
     query = parse_qs(parsed.query)
 
+    # Remove old / unwanted tracking params
+    remove_keys = [
+        "tag",
+        "linkCode",
+        "linkId",
+        "ref_",
+        "ascsubtag"
+    ]
+
+    for k in remove_keys:
+        query.pop(k, None)
+
+    # Add YOUR affiliate tag
     query["tag"] = [tag]
+
+    clean_query = urlencode(
+        query,
+        doseq=True
+    )
 
     return urlunparse(
         parsed._replace(
-            query=urlencode(query, doseq=True)
+            query=clean_query
         )
     )
 
