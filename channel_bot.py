@@ -3,7 +3,7 @@ import requests
 from urllib.parse import *
 
 API_ID = 13305226
-API_HASH = "8cde2475d6b0cb1162b89ebbac71a95d"
+API_HASH = "YOUR_API_HASH"
 
 AMAZON_TAG = "fastdeals0ee-21"
 
@@ -65,16 +65,24 @@ client = TelegramClient(
 
 @client.on(
     events.NewMessage(
-        chats=SOURCE_CHANNELS
+        chats=SOURCE_CHANNELS,
+        incoming=True
     )
 )
 async def handler(event):
+
+    print("\nNEW EVENT")
+    print("CHAT ID:", event.chat_id)
+    print("TEXT:", event.raw_text)
+    print("-------------")
 
     text = event.raw_text
 
     words = text.split()
 
     modified = []
+
+    changed = False
 
     for item in words:
 
@@ -91,14 +99,19 @@ async def handler(event):
                     expanded
                 )
 
+                changed = True
+
         modified.append(item)
 
-    final_msg = " ".join(modified)
+    if changed:
 
-    await client.send_message(
-        TARGET_CHANNEL,
-        final_msg
-    )
+        final_msg = " ".join(modified)
+
+        await client.send_message(
+            TARGET_CHANNEL,
+            final_msg,
+            link_preview=False
+        )
 
 
 client.start()
