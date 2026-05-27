@@ -32,27 +32,27 @@ def make_affiliate(url):
 
     query = parse_qs(parsed.query)
 
+    remove_keys = [
+        "tag",
+        "linkCode",
+        "linkId",
+        "ref_",
+        "ascsubtag"
+    ]
+
+    for k in remove_keys:
+        query.pop(k, None)
+
     query["tag"] = [AMAZON_TAG]
 
     return urlunparse(
         parsed._replace(
-            query=urlencode(query, doseq=True)
+            query=urlencode(
+                query,
+                doseq=True
+            )
         )
     )
-
-
-client = TelegramClient(
-    "affiliate_session",
-    API_ID,
-    API_HASH
-)
-
-
-@client.on(
-    events.NewMessage(
-        chats=SOURCE_CHANNELS
-    )
-)
 async def handler(event):
 
     text = event.raw_text
