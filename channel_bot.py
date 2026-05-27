@@ -11,7 +11,7 @@ SOURCE_CHANNELS = [
     -1003562125496
 ]
 
-TARGET_CHANNEL = "Fast_deals_online"
+TARGET_CHANNEL = "@Fast_deals_online"
 
 
 def expand_url(url):
