@@ -8,10 +8,10 @@ API_HASH = "8cde2475d6b0cb1162b89ebbac71a95d"
 AMAZON_TAG = "fastdeals0ee-21"
 
 SOURCE_CHANNELS = [
-    "source_channel_username"
+    -1003562125496
 ]
 
-TARGET_CHANNEL = "your_target_channel"
+TARGET_CHANNEL = "Fast_deals_online"
 
 
 def expand_url(url):
