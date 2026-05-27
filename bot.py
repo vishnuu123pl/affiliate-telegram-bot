@@ -2,9 +2,8 @@ import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 
-BOT_TOKEN = "5250059606:AAHmu7ZfuXzOmvjS6SHoNcx8nER4-d4xUkY"
-
-AMAZON_TAG = "fastdeals0ee-21"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+AMAZON_TAG = os.getenv("AMAZON_TAG")
 
 async def convert(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
